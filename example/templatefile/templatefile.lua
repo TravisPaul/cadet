@@ -1,5 +1,6 @@
-package.path = "/home/christian/devel/cadet/?.lua;" .. package.path
+package.path = package.path .. "?.lua"
 local cadet = require("cadet")
+local httpd = require("httpd")
 
 App = {
   index = function(env, headers, query)
@@ -12,7 +13,7 @@ App = {
     }
 
     body =
-      cadet.render_file("/home/christian/devel/cadet/example/templatefile/layout.html", view)
+      cadet.render_file("example/templatefile/layout.html", view)
 
     if (body) then
       cadet.write(body)

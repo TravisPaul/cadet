@@ -1,5 +1,6 @@
-package.path = "/home/christian/devel/cadet/?.lua;" .. package.path
+package.path = package.path .. "?.lua"
 local Cadet = require("cadet")
+local httpd = require("httpd")
 
 Params = {}
 
