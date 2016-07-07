@@ -1,4 +1,4 @@
-package.path = package.path .. "?.lua"
+package.path = package.path .. ";?.lua"
 local cadet = require("cadet")
 local httpd = require("httpd")
 

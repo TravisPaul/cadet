@@ -9,7 +9,7 @@
     /path/to/slashdir
 ]]
 
-package.path = package.path .. "?.lua"
+package.path = package.path .. ";?.lua"
 local httpd = require("httpd")
 local Cadet = require("cadet")
 
