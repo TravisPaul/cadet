@@ -1,9 +1,11 @@
 -- httpd shim for testing
--- example usage:
---   REQUEST_URI=/webhook/github lua ../src/webhook.lua
+-- examples:
+--   REQUEST_URI=/greetings/index lua example/greetings/greetings.lua
+--   REQUEST_URI=/error/index lua example/error/error.lua
+--   REQUEST_URI=/error/index REQUEST_METHOD=HEAD lua example/error/error.lua
 
 local httpd = {}
-	
+
 httpd.write = function (str)
   io.write(str)
 end
