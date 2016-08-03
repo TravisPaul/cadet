@@ -1,17 +1,21 @@
 -- httpd shim for testing
--- examples:
---   REQUEST_URI=/greetings/index lua example/greetings/greetings.lua
---   REQUEST_URI=/error/index lua example/error/error.lua
---   REQUEST_URI=/error/index REQUEST_METHOD=HEAD lua example/error/error.lua
-
 local httpd = {}
 
+httpd.silent = false
+httpd.buffer = ''
+
 httpd.write = function (str)
-  io.write(str)
+  httpd.buffer = httpd.buffer .. str
+  if httpd.silent ~= true then
+    io.write(str)
+  end
 end
 
 httpd.print = function (str)
-  io.write(str .. "\r\n")
+  httpd.buffer = httpd.buffer .. str
+  if httpd.silent ~= true then
+    io.write(str .. "\r\n")
+  end
 end
 
 httpd.register_handler = function (handler, fn)
@@ -20,24 +24,22 @@ httpd.register_handler = function (handler, fn)
   local query = nil 
   local parts = {}
   local count = 0
-  local request = nil
-  local request_payload = os.getenv('REQUEST_PAYLOAD')
-  if request_payload ~= nil then
-    request = require(request_payload)
-    env = request.env
-    header = request.headers
-    query = request.query
+  if httpd.mock_request ~= nil then
+    env = mock_request.env
+    header = mock_request.headers
+    query = mock_request.query
+    httpd.mock_request = nil
   else
-    env.request_uri = os.getenv('REQUEST_URI')
-    env.request_method = os.getenv('REQUEST_METHOD')
+    env.REQUEST_URI = os.getenv('REQUEST_URI')
+    env.REQUEST_METHOD = os.getenv('REQUEST_METHOD')
   end
-  if env.request_uri == nil then
+  if env.REQUEST_URI == nil then
     httpd.print("HTTP/1.1 500 Internal Server Error") 
     httpd.print("Content-Type: text/plain") 
     httpd.print("No REQUEST_URI provided") 
     return 1
   end
-  for word in string.gmatch(env.request_uri, '([^/]+)') do
+  for word in string.gmatch(env.REQUEST_URI, '([^/]+)') do
     parts[count] = word
     count = count + 1
   end
@@ -47,7 +49,7 @@ httpd.register_handler = function (handler, fn)
   httpd.print("HTTP/1.1 404 Not Found") 
   httpd.print("Content-Type: text/plain") 
   httpd.print("REQUEST_URI doesn't match handler") 
-  httpd.print("REQUEST_URI=" .. env.request_uri) 
+  httpd.print("REQUEST_URI=" .. env.REQUEST_URI) 
   httpd.print("handler=" .. handler)
 end
 
