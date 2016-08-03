@@ -41,7 +41,7 @@ Cadet._VERSION = "0.0.0b"
 -- The default HTTP response.
 Cadet.response = {
   http_version = "1.1",
-  status = 200,
+  status = 501,
   headers = { ["Content-Type"] = "text/html", },
   body = "",
 }
@@ -120,6 +120,8 @@ function Cadet.finish()
   printcrlf(format("Content-Length: %d", string.len(res.body)))
   printcrlf("")
   httpd.write(res.body)
+  res.body = ""
+  res.status = 501
 end
 
 
